@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import Provider from "./provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,24 +21,14 @@ export const metadata: Metadata = {
   title: "StableMax - Generate Images for FREE",
   description:
     "Generate stunning images from text using AI models for free with StableMax. Turn your ideas into visual art instantly.",
-  metadataBase: new URL("https://stablemax.com"),
   openGraph: {
     title: "StableMax - Free AI Image Generation",
     description: "Turn your text into images with our free AI-powered tool",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "StableMax AI Image Generator",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "StableMax - Free AI Image Generation",
     description: "Turn your text into images with our free AI-powered tool",
-    images: ["/twitter-image.jpg"],
   },
 };
 
@@ -55,6 +46,7 @@ export default function RootLayout({
           <Provider>
             <Header />
             {children}
+            <Toaster />
           </Provider>
         </ThemeProvider>
       </body>

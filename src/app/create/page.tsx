@@ -14,6 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { z } from "zod";
+import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   prompt: z
@@ -25,6 +27,8 @@ export default function Page() {
   const [outputImg, setOutputImg] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,19 +36,35 @@ export default function Page() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/image", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        setOutputImg(data.url);
+      } else {
+        toast({ variant: "destructive", description: data.error });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="w-full p-3 h-dvh flex justify-start items-center pt-[72px] flex-col">
-      <div className="w-full border border-red-500 p-3">
+      <div className="w-full p-3">
         <h1 className="text-center font-bold text-white text-4xl">Create</h1>
         <p className="text-white/60 text-center">
           Generate Stunning Images from Text for FREE
         </p>
       </div>
-      <div className="flex border border-green-500 w-full gap-3 h-full">
+      <div className="flex w-full gap-3 h-full">
         <div className="__form flex-[2] gap-2 flex justify-center items-start flex-col">
           <p className="text-left text-sm text-white/80">
             Type you prompt below to create any image you can imagine!
@@ -71,12 +91,30 @@ export default function Page() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit">Generate</Button>
+                <Button loading={loading} type="submit">
+                  Generate
+                </Button>
               </form>
             </Form>
           </div>
         </div>
-        <div className="__output flex-[1] bg-white/5 rounded-lg"></div>
+        <div className="__output flex-[1] bg-white/5 rounded-lg relative overflow-hidden">
+          {outputImg ? (
+            <Image
+              alt="output"
+              className="w-full h-full object-contain"
+              src={outputImg}
+              width={300}
+              height={300}
+            />
+          ) : (
+            <>
+              <div className="w-full h-full flex justify-center items-center text-white/70 text-center p-3">
+                Enter your prompt and hit generate!
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
