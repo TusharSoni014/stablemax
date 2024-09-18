@@ -42,7 +42,7 @@ export default function Page() {
                 initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 transition={{ duration: 0.2, delay: index * 0.05 }}
-                className="w-full h-full border rounded-md p-2.5"
+                className="w-full h-fit border rounded-md p-2.5"
                 key={post.id}
               >
                 <Image
